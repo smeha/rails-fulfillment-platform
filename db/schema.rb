@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_08_060000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_08_070000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,6 +31,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_08_060000) do
     t.index ["actor_type", "actor_id"], name: "index_audit_entries_on_actor"
     t.index ["auditable_type", "auditable_id"], name: "index_audit_entries_on_auditable"
     t.index ["occurred_at"], name: "index_audit_entries_on_occurred_at"
+  end
+
+  create_table "internal_users", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.datetime "last_sign_in_at"
+    t.string "name", null: false
+    t.string "password_digest", null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((email)::text)", name: "index_internal_users_on_lower_email", unique: true
+    t.index ["active"], name: "index_internal_users_on_active"
   end
 
   create_table "order_line_items", force: :cascade do |t|

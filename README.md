@@ -26,11 +26,13 @@ After the setup to run server again:
 bin/dev
 ```
 
+## Default login credentials
+* Email: `internal@example.com`
+* Password: `password123`
+
 ## Design decisions and tradeoffs
 - To fill later as it develops
 
-## Default login credentials
-- To fill later as it develops
 
 ## How to run locally step by step
 ### Install dependencies

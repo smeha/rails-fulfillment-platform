@@ -1,0 +1,19 @@
+<% content_for :title, "Internal Sign In" %>
+
+<main>
+  <h1>Internal Sign In</h1>
+
+  <%= form_with scope: :session, url: session_path do |form| %>
+    <div>
+      <%= form.label :email %>
+      <%= form.email_field :email, autocomplete: "email", required: true %>
+    </div>
+
+    <div>
+      <%= form.label :password %>
+      <%= form.password_field :password, autocomplete: "current-password", required: true %>
+    </div>
+
+    <%= form.submit "Sign in" %>
+  <% end %>
+</main>

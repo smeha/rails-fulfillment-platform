@@ -7,3 +7,12 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+internal_user = InternalUser.find_or_initialize_by(email: "internal@example.com")
+internal_user.update!(
+  name: "Internal User",
+  password: "password123",
+  active: true
+)
+
+puts "Seeded internal user: #{internal_user.email}"
