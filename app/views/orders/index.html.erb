@@ -24,10 +24,17 @@
       <%= submit_tag "Apply" %>
     </div>
 
-    <table>
+    <table data-controller="select-all">
       <thead>
         <tr>
-          <th scope="col">Select</th>
+          <th scope="col">
+            <%= check_box_tag "select_all", "1", false,
+                              "aria-label": "Select all orders on this page",
+                              data: {
+                                select_all_target: "master",
+                                action: "change->select-all#toggleAll"
+                              } %>
+          </th>
           <th scope="col">Order</th>
           <th scope="col">Customer</th>
           <th scope="col">Status</th>
@@ -38,7 +45,14 @@
       <tbody>
         <% @orders.each do |order| %>
           <tr>
-            <td><%= check_box_tag "order_ids[]", order.id, false, id: "order_ids_#{order.id}" %></td>
+            <td>
+              <%= check_box_tag "order_ids[]", order.id, false,
+                                id: "order_ids_#{order.id}",
+                                data: {
+                                  select_all_target: "item",
+                                  action: "change->select-all#syncMaster"
+                                } %>
+            </td>
             <td><%= link_to order.number, order_path(order) %></td>
             <td><%= order.customer_name %></td>
             <td><%= human_status(order.status) %></td>
