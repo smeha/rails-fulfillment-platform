@@ -31,7 +31,7 @@
           <th scope="col">Order</th>
           <th scope="col">Customer</th>
           <th scope="col">Status</th>
-          <th scope="col">Total</th>
+          <th scope="col" class="numeric">Total</th>
           <th scope="col">Submitted</th>
         </tr>
       </thead>
@@ -43,7 +43,7 @@
             <td><%= order.customer_name %></td>
             <td><%= human_status(order.status) %></td>
             <td class="numeric"><%= format_cents(order.total_cents) %></td>
-            <td class="nowrap"><%= l(order.submitted_at, format: :short) %></td>
+            <td class="nowrap"><%= l(order.submitted_at, format: :long) %></td>
           </tr>
         <% end %>
         <% if @orders.empty? %>

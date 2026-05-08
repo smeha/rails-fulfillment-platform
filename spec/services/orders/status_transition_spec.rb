@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Orders::StatusTransition do
+  include ActiveJob::TestHelper
+
   describe "#call" do
     it "advances an order through a valid transition and writes an audit entry" do
       order = create(:order, status: "pending_review")
@@ -50,6 +52,18 @@ RSpec.describe Orders::StatusTransition do
       expect(result).not_to be_success
       expect(result.message).to eq("Unknown order status: lost")
       expect(order.reload.status).to eq("approved")
+    end
+
+    it "queues tracking sync when an order ships" do
+      order = create(:order, status: "packed")
+
+      expect { described_class.new(order).call("shipped") }.to have_enqueued_job(SyncTrackingEventsJob).with(order)
+    end
+
+    it "queues tracking sync when an order is delivered" do
+      order = create(:order, status: "shipped")
+
+      expect { described_class.new(order).call("delivered") }.to have_enqueued_job(SyncTrackingEventsJob).with(order)
     end
   end
 end

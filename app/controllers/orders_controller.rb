@@ -24,6 +24,7 @@ class OrdersController < ApplicationController
   def show
     @line_items = @order.line_items.includes(:product)
     @audit_entries = @order.audit_entries.includes(:actor).recent
+    @tracking_events = @order.tracking_events.chronological
   end
 
   def status

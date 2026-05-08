@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_08_070000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_08_080000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -82,6 +82,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_08_070000) do
     t.check_constraint "price_cents >= 0", name: "products_price_cents_non_negative"
   end
 
+  create_table "tracking_events", force: :cascade do |t|
+    t.string "carrier", null: false
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.string "external_id", null: false
+    t.datetime "occurred_at", null: false
+    t.bigint "order_id", null: false
+    t.jsonb "raw_payload", default: {}, null: false
+    t.string "status", null: false
+    t.string "tracking_number", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id", "external_id"], name: "index_tracking_events_on_order_id_and_external_id", unique: true
+    t.index ["order_id", "occurred_at"], name: "index_tracking_events_on_order_id_and_occurred_at"
+    t.index ["order_id"], name: "index_tracking_events_on_order_id"
+  end
+
   add_foreign_key "order_line_items", "orders"
   add_foreign_key "order_line_items", "products"
+  add_foreign_key "tracking_events", "orders"
 end

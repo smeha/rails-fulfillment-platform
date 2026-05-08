@@ -82,6 +82,28 @@ RSpec.describe "Orders", type: :request do
       expect(response.body).to include("Move to Packed")
       expect(response.body).to include("Status changed from Pending review to Approved")
     end
+
+    it "shows the tracking timeline for shipped orders" do
+      order = create(:order, status: "shipped")
+      create(:tracking_event, order: order, status: "in_transit", description: "Package is in transit")
+
+      get order_path(order)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Tracking timeline")
+      expect(response.body).to include("Package is in transit")
+    end
+
+    it "keeps polling delivered orders until the delivered tracking event arrives" do
+      order = create(:order, status: "delivered")
+      create(:tracking_event, order: order, status: "in_transit", description: "Package is in transit")
+
+      get order_path(order)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("data-tracking-refresh-pending-value=\"true\"")
+      expect(response.body).to include("Tracking sync is updating.")
+    end
   end
 
   describe "PATCH /orders/:id/status" do

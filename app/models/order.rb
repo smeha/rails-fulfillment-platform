@@ -4,6 +4,7 @@ class Order < ApplicationRecord
   has_many :line_items, class_name: "OrderLineItem", dependent: :destroy, inverse_of: :order
   has_many :products, through: :line_items
   has_many :audit_entries, as: :auditable, dependent: :destroy
+  has_many :tracking_events, dependent: :destroy
 
   validates :number, presence: true, uniqueness: true
   validates :customer_name, :customer_email, :shipping_address, :submitted_at, presence: true

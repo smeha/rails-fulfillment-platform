@@ -72,6 +72,8 @@ orders.each do |attributes|
     product = Product.find_by!(sku: sku)
     order.line_items.create!(product: product, quantity: quantity)
   end
+
+  Orders::TrackingSync.new(order).call if order.status.in?(%w[shipped delivered])
 end
 
-puts "Seeded #{Product.count} products and #{Order.count} orders"
+puts "Seeded #{Product.count} products, #{Order.count} orders, and #{TrackingEvent.count} tracking events"

@@ -53,7 +53,7 @@ module Orders
         order: order,
         audit_entry: audit_entry,
         message: "Order moved from #{human_status(previous_status)} to #{human_status(target_status)}."
-      )
+      ).tap { enqueue_tracking_sync(target_status) }
     end
 
     private
@@ -66,6 +66,10 @@ module Orders
 
     def failure(message)
       Result.new(success: false, order: order, message: message)
+    end
+
+    def enqueue_tracking_sync(target_status)
+      SyncTrackingEventsJob.perform_later(order) if target_status.in?(%w[shipped delivered])
     end
 
     def invalid_transition_message(target_status)

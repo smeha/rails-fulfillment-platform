@@ -11,9 +11,11 @@
     <dt>Status</dt>
     <dd><%= human_status(@order.status) %></dd>
     <dt>Shipping address</dt>
-    <dd><%= simple_format(@order.shipping_address) %></dd>
-    <dt>Total</dt>
+    <dd class="pre-line"><%= @order.shipping_address %></dd>
+    <dt>Order total</dt>
     <dd><%= format_cents(@order.total_cents) %></dd>
+    <dt>Submitted</dt>
+    <dd><%= l(@order.submitted_at, format: :long) %></dd>
   </dl>
 
   <section class="section">
@@ -31,14 +33,14 @@
 
   <section class="section">
     <h2>Line items</h2>
-    <table>
+    <table class="line-items-table">
       <thead>
         <tr>
           <th scope="col">Product</th>
           <th scope="col">SKU</th>
-          <th scope="col">Qty</th>
-          <th scope="col">Unit price</th>
-          <th scope="col">Total</th>
+          <th scope="col" class="numeric">Qty</th>
+          <th scope="col" class="numeric">Unit price</th>
+          <th scope="col" class="numeric">Total</th>
         </tr>
       </thead>
       <tbody>
@@ -53,6 +55,37 @@
         <% end %>
       </tbody>
     </table>
+  </section>
+
+  <% tracking_pending = (@order.status == "shipped" && @tracking_events.empty?) ||
+                        (@order.status == "delivered" && @tracking_events.none? { |event| event.status == "delivered" }) %>
+
+  <section
+    class="section"
+    data-controller="tracking-refresh"
+    data-tracking-refresh-pending-value="<%= tracking_pending %>">
+    <h2>Tracking timeline</h2>
+
+    <% if @tracking_events.any? %>
+      <ol class="timeline">
+        <% @tracking_events.each do |event| %>
+          <li>
+            <strong><%= human_status(event.status) %></strong>
+            <span><%= event.description %></span>
+            <small>
+              <%= event.carrier %> <%= event.tracking_number %> &middot; <%= l(event.occurred_at, format: :short) %>
+            </small>
+          </li>
+        <% end %>
+      </ol>
+      <% if tracking_pending %>
+        <p class="empty-state">Tracking sync is updating.</p>
+      <% end %>
+    <% elsif tracking_pending %>
+      <p class="empty-state">Tracking sync is running.</p>
+    <% else %>
+      <p class="empty-state">Tracking starts after the order ships.</p>
+    <% end %>
   </section>
 
   <section class="section">
