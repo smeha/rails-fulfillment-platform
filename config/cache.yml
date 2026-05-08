@@ -1,16 +1,21 @@
-default: &default
-  store_options:
-    # Cap age of oldest cache entry to fulfill retention policies
-    # max_age: <%= 60.days.to_i %>
-    max_size: <%= 256.megabytes %>
-    namespace: <%= Rails.env %>
-
-development:
-  <<: *default
-
-test:
-  <<: *default
-
-production:
-  database: cache
-  <<: *default
+# Solid Cache is not currently used by this application.
+#
+# To enable it later:
+# 1. Uncomment `gem "solid_cache"` in the Gemfile.
+# 2. Load/configure the appropriate Rails cache adapter.
+# 3. Restore the cache database configuration.
+#
+# default: &default
+#   store_options:
+#     max_size: <%= 256.megabytes %>
+#     namespace: <%= Rails.env %>
+#
+# development:
+#   <<: *default
+#
+# test:
+#   <<: *default
+#
+# production:
+#   database: cache
+#   <<: *default
