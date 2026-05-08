@@ -8,7 +8,7 @@ RSpec.describe "Internal user sessions", type: :request do
       expect(response).to redirect_to(login_path)
     end
 
-    it "renders the dashboard for authenticated internal users" do
+    it "renders the orders page for authenticated internal users" do
       internal_user = create(:internal_user)
 
       sign_in(internal_user)

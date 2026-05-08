@@ -150,6 +150,14 @@ input[type="password"] {
   margin-bottom: 0.75rem;
 }
 
+.pagination {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
 .details {
   display: grid;
   gap: 0.75rem 2rem;

@@ -28,49 +28,44 @@ products.each_value do |attributes|
   Product.find_or_initialize_by(sku: attributes[:sku]).update!(attributes.merge(active: true))
 end
 
-orders = [
-  {
-    number: "ORDER-1001",
-    customer_name: "John First",
-    customer_email: "john_first@example.com",
-    shipping_address: "1111111 Market St, San Diego, CA 92130",
-    status: "pending_review",
-    submitted_at: 3.hours.ago,
-    line_items: [ [ "BOX-001", 2 ], [ "LABEL-001", 2 ] ]
-  },
-  {
-    number: "ORDER-1002",
-    customer_name: "John Second",
-    customer_email: "john_second@example.com",
-    shipping_address: "22222 Market St, San Diego, CA 92130",
-    status: "approved",
-    submitted_at: 1.day.ago,
-    line_items: [ [ "MAILER-001", 4 ], [ "TAPE-001", 1 ] ]
-  },
-  {
-    number: "ORDER-1003",
-    customer_name: "John Third",
-    customer_email: "john_third@example.com",
-    shipping_address: "33333 Market St, San Diego, CA 92130",
-    status: "packed",
-    submitted_at: 2.days.ago,
-    line_items: [ [ "BOX-001", 1 ], [ "TAPE-001", 2 ] ]
-  },
-  {
-    number: "ORDER-1004",
-    customer_name: "John Fourth",
-    customer_email: "john_fourth@example.com",
-    shipping_address: "44444 Market St, San Diego, CA 92130",
-    status: "shipped",
-    submitted_at: 4.days.ago,
-    line_items: [ [ "MAILER-001", 3 ], [ "LABEL-001", 3 ] ]
-  }
+customers = [
+  { name: "John First", email: "john_first@example.com", address: "11111 Market St, San Diego, CA 92130" },
+  { name: "John Second", email: "john_second@example.com", address: "22222 Market St, San Diego, CA 92130" },
+  { name: "John Third", email: "john_third@example.com", address: "33333 Market St, San Diego, CA 92130" },
+  { name: "John Fourth", email: "john_fourth@example.com", address: "44444 Market St, San Diego, CA 92130" },
+  { name: "John Fifth", email: "john_fifth@example.com", address: "55555 Market St, San Diego, CA 92130" },
+  { name: "John Sixth", email: "john_sixth@example.com", address: "66666 Market St, San Diego, CA 92130" },
+  { name: "John Seventh", email: "john_seventh@example.com", address: "77777 Market St, San Diego, CA 92130" },
+  { name: "John Eighth", email: "john_eighth@example.com", address: "88888 Market St, San Diego, CA 92130" }
 ]
 
+line_item_sets = [
+  { "BOX-001" => 2, "LABEL-001" => 2 },
+  { "MAILER-001" => 4, "TAPE-001" => 1 },
+  { "BOX-001" => 1, "TAPE-001" => 2 },
+  { "MAILER-001" => 3, "LABEL-001" => 3 },
+  { "BOX-001" => 3, "MAILER-001" => 2 },
+  { "LABEL-001" => 10, "TAPE-001" => 1 }
+]
+
+orders = 24.times.map do |index|
+  customer = customers[index % customers.length]
+
+  {
+    number: format("ORDER-%<number>04d", number: 1001 + index),
+    customer_name: customer[:name],
+    customer_email: customer[:email],
+    shipping_address: customer[:address],
+    status: Order::STATUSES[index % Order::STATUSES.length],
+    submitted_at: (index + 3).hours.ago,
+    line_items: line_item_sets[index % line_item_sets.length]
+  }
+end
+
 orders.each do |attributes|
-  line_items = attributes.delete(:line_items)
+  line_items = attributes.fetch(:line_items)
   order = Order.find_or_initialize_by(number: attributes[:number])
-  order.update!(attributes)
+  order.update!(attributes.except(:line_items))
   order.line_items.destroy_all
 
   line_items.each do |sku, quantity|

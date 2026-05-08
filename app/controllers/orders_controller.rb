@@ -1,17 +1,24 @@
 class OrdersController < ApplicationController
+  ORDERS_PER_PAGE = 10
+
   before_action :set_order, only: %i[show status]
 
   def index
     @statuses = Order::STATUSES
     @selected_status = params[:status].presence
-    @orders = Order.includes(:line_items).order(submitted_at: :desc, id: :desc)
+    orders = Order.order(submitted_at: :desc, id: :desc)
 
     if @selected_status.in?(@statuses)
-      @orders = @orders.where(status: @selected_status)
+      orders = orders.where(status: @selected_status)
     elsif @selected_status.present?
       flash.now[:alert] = "Unknown order status filter: #{@selected_status}"
       @selected_status = nil
     end
+
+    @total_orders = orders.count
+    @total_pages = [ (@total_orders.to_f / ORDERS_PER_PAGE).ceil, 1 ].max
+    @page = [ requested_page, @total_pages ].min
+    @orders = orders.includes(:line_items).offset((@page - 1) * ORDERS_PER_PAGE).limit(ORDERS_PER_PAGE)
   end
 
   def show
@@ -30,7 +37,7 @@ class OrdersController < ApplicationController
     order_ids = Array(params[:order_ids]).compact_blank
 
     if order_ids.empty?
-      redirect_to orders_path(status: params[:filter_status]), alert: "Select at least one order."
+      redirect_to filtered_orders_path, alert: "Select at least one order."
       return
     end
 
@@ -38,13 +45,22 @@ class OrdersController < ApplicationController
       order.transition_to(params[:status], actor: current_internal_user)
     end
 
-    redirect_to orders_path(status: params[:filter_status]), flash_for_bulk_results(results, params[:status])
+    redirect_to filtered_orders_path, flash_for_bulk_results(results, params[:status])
   end
 
   private
 
   def set_order
     @order = Order.find(params[:id])
+  end
+
+  def requested_page
+    page = params[:page].to_i
+    page.positive? ? page : 1
+  end
+
+  def filtered_orders_path
+    orders_path(status: params[:filter_status].presence, page: params[:filter_page].presence)
   end
 
   def flash_for_bulk_results(results, status)

@@ -17,6 +17,17 @@ RSpec.describe "Orders", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(approved_order.number)
       expect(response.body).not_to include(pending_order.number)
+      expect(response.body).to include("option selected=\"selected\" value=\"approved\"")
+    end
+
+    it "renders a status filter that submits when changed" do
+      create(:order)
+
+      get orders_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Filter by status")
+      expect(response.body).to include("onchange=\"this.form.requestSubmit()\"")
     end
 
     it "rejects unknown filters without crashing" do
@@ -26,6 +37,33 @@ RSpec.describe "Orders", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Unknown order status filter: lost")
+    end
+
+    it "shows the first ten orders on page one" do
+      orders = 11.times.map do |index|
+        create(:order, submitted_at: (index + 1).minutes.ago)
+      end
+
+      get orders_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(orders.first.number)
+      expect(response.body).not_to include(orders.last.number)
+      expect(response.body).to include("Page 1 of 2")
+      expect(response.body).to include("Next")
+    end
+
+    it "shows later orders on requested pages" do
+      orders = 11.times.map do |index|
+        create(:order, submitted_at: (index + 1).minutes.ago)
+      end
+
+      get orders_path(page: 2)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(orders.last.number)
+      expect(response.body).not_to include(orders.first.number)
+      expect(response.body).to include("Previous")
     end
   end
 

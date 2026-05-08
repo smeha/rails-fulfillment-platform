@@ -5,15 +5,18 @@
     <h1>Orders</h1>
   </div>
 
-  <nav class="filters" aria-label="Order status filters">
-    <%= link_to "All", orders_path %>
-    <% @statuses.each do |status| %>
-      <%= link_to human_status(status), orders_path(status: status) %>
-    <% end %>
-  </nav>
+  <%= form_with url: orders_path, method: :get, class: "filters" do %>
+    <%= label_tag :status_filter, "Filter by status" %>
+    <%= select_tag :status,
+                   options_for_select([["All statuses", ""]] + @statuses.map { |status| [human_status(status), status] }, @selected_status),
+                   id: :status_filter,
+                   onchange: "this.form.requestSubmit()" %>
+    <noscript><%= submit_tag "Filter" %></noscript>
+  <% end %>
 
   <%= form_with url: bulk_status_orders_path, method: :patch do %>
     <%= hidden_field_tag :filter_status, @selected_status %>
+    <%= hidden_field_tag :filter_page, @page %>
 
     <div class="bulk-actions">
       <%= label_tag :status, "Bulk action" %>
@@ -43,7 +46,28 @@
             <td class="nowrap"><%= l(order.submitted_at, format: :short) %></td>
           </tr>
         <% end %>
+        <% if @orders.empty? %>
+          <tr>
+            <td colspan="6" class="empty-state">No orders found.</td>
+          </tr>
+        <% end %>
       </tbody>
     </table>
+  <% end %>
+
+  <% if @total_pages > 1 %>
+    <% pagination_params = { status: @selected_status.presence }.compact %>
+
+    <nav class="pagination" aria-label="Order pages">
+      <% if @page > 1 %>
+        <%= link_to "Previous", orders_path(pagination_params.merge(page: @page - 1)) %>
+      <% end %>
+
+      <span>Page <%= @page %> of <%= @total_pages %></span>
+
+      <% if @page < @total_pages %>
+        <%= link_to "Next", orders_path(pagination_params.merge(page: @page + 1)) %>
+      <% end %>
+    </nav>
   <% end %>
 </main>
