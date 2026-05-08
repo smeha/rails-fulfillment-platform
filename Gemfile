@@ -60,6 +60,9 @@ group :development, :test do
 
   # RSpec
   gem "rspec-rails", "~> 8"
+
+  # Data factories for tests
+  gem "factory_bot_rails"
 end
 
 group :development do

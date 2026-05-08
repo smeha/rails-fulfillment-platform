@@ -10,7 +10,21 @@ Ruby on Rails project: Internal fulfillment platform used by operations staff to
 - RuboCop (via rubocop-rails-omakase + rubocop-performance + rubocop-rspec + rubocop-factory_bot)
 
 ## How to run locally in one command
-- To fill later as it develops
+```bash
+bin/setup
+```
+
+This installs dependencies, prepares the database, clears stale logs/temp files, and starts the Rails server. After the server boots, open http://localhost:3000.
+
+To rebuild the database from scratch:
+```bash
+bin/setup --reset
+```
+
+After the setup to run server again:
+```bash
+bin/dev
+```
 
 ## Design decisions and tradeoffs
 - To fill later as it develops
@@ -77,7 +91,7 @@ Orders move through a fulfillment pipeline. Staff need to be able to advance ord
 Compliance requires that status changes on orders are logged — what changed, and when it moved from one state to another. This requirement may apply to other models in the future, so keep that in mind when designing the solution.
 
 #### Carrier Tracking Integration (Note: for now can be simulated)
-When an order ships, ShipRight needs to pull tracking events from the carrier's API and display them to staff. The carrier integration should be treated as an external dependency with a clean boundary — assume the API can fail, be slow, or return unexpected data.
+When an order ships, the platform needs to pull tracking events from the carrier's API and display them to staff. The carrier integration should be treated as an external dependency with a clean boundary — assume the API can fail, be slow, or return unexpected data.
 
 Tracking syncs should not block the user — they should happen in the background and update the page automatically when complete.
 

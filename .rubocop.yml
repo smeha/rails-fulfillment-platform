@@ -12,3 +12,9 @@ AllCops:
     - "bin/**/*"
     - "vendor/**/*"
     - "node_modules/**/*"
+
+RSpec/ExampleLength:
+  Max: 13
+
+RSpec/MultipleExpectations:
+  Max: 5
