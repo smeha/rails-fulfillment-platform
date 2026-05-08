@@ -31,8 +31,11 @@ bin/dev
 * Password: `password123`
 
 ## Design decisions and tradeoffs
-- To fill later as it develops
-
+- Load only the Rails frameworks this app currently uses. Kept unused defaults commented so they are easy to restore.
+- Internal users are seeded and managed by code/database, not public registration.
+- Store money as integer cents to avoid decimal rounding issues.
+- Keep order status rules in a service object because lifecycle transitions are core business semantics.
+- Use polymorphic audit entries so status-change history can grow beyond orders later.
 
 ## How to run locally step by step
 ### Install dependencies
