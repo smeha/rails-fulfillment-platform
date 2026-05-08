@@ -2,7 +2,7 @@
 Ruby on Rails project: Internal fulfillment platform used by operations staff to manage customer orders from placement through delivery
 
 ## Tech Stack
-- Ruby (v4.0.3)
+- Ruby (v3.4.8)
 - Rails (v8.1)
 - PostgreSQL (v18)
 - Bundler (v4.0.10)
