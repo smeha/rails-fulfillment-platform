@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :internal_user do
-    name { "Smeha Smehason" }
+    name { "Internal User" }
     sequence(:email) { |n| "internal#{n}@example.com" }
     password { "password123" }
     active { true }

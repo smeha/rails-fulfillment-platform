@@ -1,8 +1,12 @@
 Rails.application.routes.draw do
-  root "dashboard#show"
+  root "orders#index"
 
   get "login", to: "sessions#new"
   resource :session, only: %i[create destroy]
+  resources :orders, only: %i[index show] do
+    patch :status, on: :member
+    patch :bulk_status, on: :collection
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

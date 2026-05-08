@@ -16,8 +16,8 @@ RSpec.describe "Internal user sessions", type: :request do
       get root_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Operations Dashboard")
-      expect(response.body).to include(internal_user.email)
+      expect(response.body).to include("Orders")
+      expect(response.body).to include(internal_user.name)
     end
   end
 

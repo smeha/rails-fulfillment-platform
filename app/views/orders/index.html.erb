@@ -1,0 +1,47 @@
+<% content_for :title, "Orders" %>
+
+<main>
+  <h1>Orders</h1>
+
+  <nav aria-label="Order status filters">
+    <%= link_to "All", orders_path %>
+    <% @statuses.each do |status| %>
+      <%= link_to human_status(status), orders_path(status: status) %>
+    <% end %>
+  </nav>
+
+  <%= form_with url: bulk_status_orders_path, method: :patch do %>
+    <%= hidden_field_tag :filter_status, @selected_status %>
+
+    <div>
+      <%= label_tag :status, "Bulk action" %>
+      <%= select_tag :status, options_for_select(Order::STATUSES.map { |status| [human_status(status), status] }) %>
+      <%= submit_tag "Apply" %>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Select</th>
+          <th scope="col">Order</th>
+          <th scope="col">Customer</th>
+          <th scope="col">Status</th>
+          <th scope="col">Total</th>
+          <th scope="col">Submitted</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @orders.each do |order| %>
+          <tr>
+            <td><%= check_box_tag "order_ids[]", order.id, false, id: "order_ids_#{order.id}" %></td>
+            <td><%= link_to order.number, order_path(order) %></td>
+            <td><%= order.customer_name %></td>
+            <td><%= human_status(order.status) %></td>
+            <td><%= format_cents(order.total_cents) %></td>
+            <td><%= l(order.submitted_at, format: :short) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</main>

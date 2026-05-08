@@ -35,6 +35,7 @@ bin/dev
 - Internal users are seeded and managed by code/database, not public registration.
 - Store money as integer cents to avoid decimal rounding issues.
 - Keep order status rules in a service object because lifecycle transitions are core business semantics.
+- Route single and bulk dashboard actions through the same transition service so rules stay consistent.
 - Use polymorphic audit entries so status-change history can grow beyond orders later.
 
 ## How to run locally step by step
@@ -80,8 +81,7 @@ Internal fulfillment platform used by operations staff to manage customer orders
 ### Initial business issues to solve
 Operations staff currently have no reliable way to:
 * Know which orders are waiting on action from them
-* Prevent orders from being processed out of sequence (e.g., marking something as shipped before it's
-been reviewed)
+* Prevent orders from being processed out of sequence (e.g., marking something as shipped before it's been reviewed)
 * See live carrier tracking updates without manually checking the carrier's website
 * Take bulk actions on groups of orders instead of processing them one at a time
 
@@ -93,7 +93,7 @@ Only authenticated staff members should be able to access the dashboard. There i
 Orders move through a fulfillment pipeline. Staff need to be able to advance orders through that pipeline, but the system should prevent nonsensical transitions — you can't ship something that hasn't been approved, and you can't cancel something that's already been delivered. When a staff member attempts an invalid transition, they should see a clear explanation, not an error page.
 
 #### Audit History
-Compliance requires that status changes on orders are logged — what changed, and when it moved from one state to another. This requirement may apply to other models in the future, so keep that in mind when designing the solution.
+Compliance requires that status changes on orders are logged — what changed, and when it moved from one state to another. This requirement may apply to other models in the future, just to keep that in mind when designing the solution.
 
 #### Carrier Tracking Integration (Note: for now can be simulated)
 When an order ships, the platform needs to pull tracking events from the carrier's API and display them to staff. The carrier integration should be treated as an external dependency with a clean boundary — assume the API can fail, be slow, or return unexpected data.
