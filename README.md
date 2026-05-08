@@ -1,4 +1,4 @@
-# Internal Fullfillment Platform
+# Internal Fulfillment Platform
 Ruby on Rails project: Internal fulfillment platform used by operations staff to manage customer orders from placement through delivery
 
 ## Tech Stack
@@ -7,7 +7,7 @@ Ruby on Rails project: Internal fulfillment platform used by operations staff to
 - PostgreSQL (v18)
 - Bundler (v4.0.10)
 - RSpec-Rails (v8)
-- RuboCop (via rubocop-rails-omakase + rubocop-performance + rubocop-rspec)
+- RuboCop (via rubocop-rails-omakase + rubocop-performance + rubocop-rspec + rubocop-factory_bot)
 
 ## How to run locally in one command
 - To fill later as it develops
@@ -26,8 +26,7 @@ bundle install
 
 ### Setup database
 ```bash
-rails db:create
-rails db:migrate
+rails db:prepare
 rails db:seed
 ```
 
@@ -67,7 +66,7 @@ been reviewed)
 * See live carrier tracking updates without manually checking the carrier's website
 * Take bulk actions on groups of orders instead of processing them one at a time
 
-### System requirments
+### System requirements
 #### Access Control
 Only authenticated staff members should be able to access the dashboard. There is no self-serve registration — accounts are managed internally.
 
@@ -81,11 +80,6 @@ Compliance requires that status changes on orders are logged — what changed, a
 When an order ships, ShipRight needs to pull tracking events from the carrier's API and display them to staff. The carrier integration should be treated as an external dependency with a clean boundary — assume the API can fail, be slow, or return unexpected data.
 
 Tracking syncs should not block the user — they should happen in the background and update the page automatically when complete.
-
-#### Staff Dashboard
-Staff need a central view of all orders — filterable by status — and a detail view per order showing line items,pricing, current status, available actions, and the tracking timeline.
-
-They also need the ability to perform bulk operations (e.g., approving multiple orders at once) without opening each one individually.
 
 #### Staff Dashboard
 Staff need a central view of all orders — filterable by status — and a detail view per order showing line items, pricing, current status, available actions, and the tracking timeline.
