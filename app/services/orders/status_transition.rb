@@ -11,9 +11,15 @@ module Orders
       "canceled" => []
     }.freeze
 
-    Result = Struct.new(:success, :order, :message, :audit_entry, keyword_init: true) do
+    ACTIONABLE_STATUSES = TRANSITIONS.values.flatten.uniq.freeze
+
+    Result = Struct.new(:success, :order, :message, :audit_entry, :noop, keyword_init: true) do
       def success?
         success
+      end
+
+      def noop?
+        noop == true
       end
     end
 
@@ -30,7 +36,7 @@ module Orders
       target_status = new_status.to_s
 
       return failure("Unknown order status: #{target_status}") unless Order::STATUSES.include?(target_status)
-      return failure("Order is already #{human_status(order.status)}.") if target_status == order.status
+      return noop("Order is already #{human_status(order.status)}.") if target_status == order.status
       return failure(invalid_transition_message(target_status)) unless allowed?(target_status)
 
       audit_entry = nil
@@ -66,6 +72,10 @@ module Orders
 
     def failure(message)
       Result.new(success: false, order: order, message: message)
+    end
+
+    def noop(message)
+      Result.new(success: true, noop: true, order: order, message: message)
     end
 
     def enqueue_tracking_sync(target_status)

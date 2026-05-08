@@ -31,13 +31,19 @@ bin/dev
 * Password: `password123`
 
 ## Design decisions and tradeoffs
-- Load only the Rails frameworks this app currently uses. Kept unused defaults commented so they are easy to restore.
-- Internal users are seeded and managed by code/database, not public registration.
-- Store money as integer cents to avoid decimal rounding issues.
-- Keep order status rules in a service object because lifecycle transitions are core business semantics.
-- Route single and bulk dashboard actions through the same transition service so rules stay consistent.
-- Use polymorphic audit entries so status-change history can grow beyond orders later.
-- Tracking is simulated. However design is to keep carrier tracking behind a service boundary, sync it in a job, and poll the order page while events are pending.
+* Load only the Rails frameworks this app currently uses. Kept unused defaults commented so they are easy to restore.
+* Internal users are seeded and managed by code/database, not public registration.
+* Store money as integer cents to avoid decimal rounding issues.
+* Keep order status rules in a service object because lifecycle transitions are core business semantics.
+* Route single and bulk dashboard actions through the same transition service so rules stay consistent.
+* Use polymorphic audit entries so status-change history can grow beyond orders later.
+* Tracking is simulated. The design keeps carrier tracking behind a service boundary, syncs it in a background job, and polls the order page while events are still pending.
+
+## Potential things to implement in the future
+* Add role-based authorization (for example only managers can cancel a shipped order) the current model is basic authentication-only.
+* Make the line item price a bigint in atomic units and add currency.
+* Add additional filters such as search and date-range filters, and sortable columns.
+* Lock down sign-in further: rate limit, lockout after repeated failures, and password complexity policy.
 
 ## How to run locally step by step
 ### Install dependencies

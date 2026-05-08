@@ -65,13 +65,17 @@ class OrdersController < ApplicationController
   end
 
   def flash_for_bulk_results(results, status)
-    successes = results.count(&:success?)
-    failures = results.size - successes
+    moved = results.count { |result| result.success? && !result.noop? }
+    already = results.count(&:noop?)
+    failed = results.count { |result| !result.success? }
+    target = status.to_s.humanize.downcase
 
-    if failures.zero?
-      { notice: "#{successes} #{'order'.pluralize(successes)} moved to #{status.to_s.humanize.downcase}." }
-    else
-      { alert: "#{successes} #{'order'.pluralize(successes)} moved to #{status.to_s.humanize.downcase}; #{failures} #{'order'.pluralize(failures)} could not be updated." }
-    end
+    parts = []
+    parts << "#{moved} #{'order'.pluralize(moved)} moved to #{target}" if moved.positive?
+    parts << "#{already} already #{target}" if already.positive?
+    parts << "#{failed} #{'order'.pluralize(failed)} could not be updated" if failed.positive?
+
+    message = "#{parts.join('; ')}."
+    failed.zero? ? { notice: message } : { alert: message }
   end
 end

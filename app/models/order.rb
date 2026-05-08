@@ -3,7 +3,7 @@ class Order < ApplicationRecord
 
   has_many :line_items, class_name: "OrderLineItem", dependent: :destroy, inverse_of: :order
   has_many :products, through: :line_items
-  has_many :audit_entries, as: :auditable, dependent: :destroy
+  has_many :audit_entries, as: :auditable, dependent: :restrict_with_exception
   has_many :tracking_events, dependent: :destroy
 
   validates :number, presence: true, uniqueness: true
@@ -11,7 +11,9 @@ class Order < ApplicationRecord
   validates :status, presence: true, inclusion: { in: STATUSES }
 
   def total_cents
-    line_items.sum(&:total_cents)
+    return line_items.sum(&:total_cents) if line_items.loaded?
+
+    line_items.sum("quantity * unit_price_cents")
   end
 
   def available_statuses

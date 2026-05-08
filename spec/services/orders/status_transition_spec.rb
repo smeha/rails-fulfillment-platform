@@ -54,6 +54,17 @@ RSpec.describe Orders::StatusTransition do
       expect(order.reload.status).to eq("approved")
     end
 
+    it "treats a same-state transition as a noop success without writing an audit entry" do
+      order = create(:order, status: "approved")
+
+      result = described_class.new(order).call("approved")
+
+      expect(result).to be_success
+      expect(result).to be_noop
+      expect(result.message).to eq("Order is already approved.")
+      expect(order.reload.audit_entries).to be_empty
+    end
+
     it "queues tracking sync when an order ships" do
       order = create(:order, status: "packed")
 

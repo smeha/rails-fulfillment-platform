@@ -20,7 +20,7 @@
 
     <div class="bulk-actions">
       <%= label_tag :status, "Bulk action" %>
-      <%= select_tag :status, options_for_select(Order::STATUSES.map { |status| [human_status(status), status] }) %>
+      <%= select_tag :status, options_for_select(Orders::StatusTransition::ACTIONABLE_STATUSES.map { |status| [human_status(status), status] }) %>
       <%= submit_tag "Apply" %>
     </div>
 
