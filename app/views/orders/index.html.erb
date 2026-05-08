@@ -1,9 +1,11 @@
 <% content_for :title, "Orders" %>
 
 <main>
-  <h1>Orders</h1>
+  <div class="page-header">
+    <h1>Orders</h1>
+  </div>
 
-  <nav aria-label="Order status filters">
+  <nav class="filters" aria-label="Order status filters">
     <%= link_to "All", orders_path %>
     <% @statuses.each do |status| %>
       <%= link_to human_status(status), orders_path(status: status) %>
@@ -13,7 +15,7 @@
   <%= form_with url: bulk_status_orders_path, method: :patch do %>
     <%= hidden_field_tag :filter_status, @selected_status %>
 
-    <div>
+    <div class="bulk-actions">
       <%= label_tag :status, "Bulk action" %>
       <%= select_tag :status, options_for_select(Order::STATUSES.map { |status| [human_status(status), status] }) %>
       <%= submit_tag "Apply" %>
@@ -37,8 +39,8 @@
             <td><%= link_to order.number, order_path(order) %></td>
             <td><%= order.customer_name %></td>
             <td><%= human_status(order.status) %></td>
-            <td><%= format_cents(order.total_cents) %></td>
-            <td><%= l(order.submitted_at, format: :short) %></td>
+            <td class="numeric"><%= format_cents(order.total_cents) %></td>
+            <td class="nowrap"><%= l(order.submitted_at, format: :short) %></td>
           </tr>
         <% end %>
       </tbody>

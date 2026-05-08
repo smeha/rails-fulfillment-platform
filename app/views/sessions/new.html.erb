@@ -3,13 +3,13 @@
 <main>
   <h1>Internal Sign In</h1>
 
-  <%= form_with scope: :session, url: session_path do |form| %>
-    <div>
+  <%= form_with scope: :session, url: session_path, class: "login-form" do |form| %>
+    <div class="field">
       <%= form.label :email %>
       <%= form.email_field :email, autocomplete: "email", required: true %>
     </div>
 
-    <div>
+    <div class="field">
       <%= form.label :password %>
       <%= form.password_field :password, autocomplete: "current-password", required: true %>
     </div>

@@ -25,7 +25,7 @@
 
   <body>
     <% if flash.any? %>
-      <section aria-label="Flash messages">
+      <section class="flash" aria-label="Flash messages">
         <% flash.each do |type, message| %>
           <p><%= message %></p>
         <% end %>
@@ -33,7 +33,7 @@
     <% end %>
 
     <% if current_internal_user %>
-      <header>
+      <header class="topbar">
         <span><%= current_internal_user.name %></span>
         <%= button_to "Sign out", session_path, method: :delete %>
       </header>

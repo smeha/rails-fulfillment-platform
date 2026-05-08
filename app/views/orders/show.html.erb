@@ -1,11 +1,11 @@
 <% content_for :title, @order.number %>
 
 <main>
-  <%= link_to "Back to orders", orders_path %>
+  <%= link_to "Back to orders", orders_path, class: "back-link" %>
 
   <h1><%= @order.number %></h1>
 
-  <dl>
+  <dl class="details">
     <dt>Customer</dt>
     <dd><%= @order.customer_name %> (<%= @order.customer_email %>)</dd>
     <dt>Status</dt>
@@ -16,18 +16,20 @@
     <dd><%= format_cents(@order.total_cents) %></dd>
   </dl>
 
-  <section>
+  <section class="section">
     <h2>Available actions</h2>
     <% if @order.available_statuses.any? %>
-      <% @order.available_statuses.each do |status| %>
-        <%= button_to "Move to #{human_status(status)}", status_order_path(@order), method: :patch, params: { status: status } %>
-      <% end %>
+      <div class="actions">
+        <% @order.available_statuses.each do |status| %>
+          <%= button_to "Move to #{human_status(status)}", status_order_path(@order), method: :patch, params: { status: status } %>
+        <% end %>
+      </div>
     <% else %>
-      <p>No further actions available.</p>
+      <p class="empty-state">No further actions available.</p>
     <% end %>
   </section>
 
-  <section>
+  <section class="section">
     <h2>Line items</h2>
     <table>
       <thead>
@@ -44,16 +46,16 @@
           <tr>
             <td><%= line_item.product.name %></td>
             <td><%= line_item.product.sku %></td>
-            <td><%= line_item.quantity %></td>
-            <td><%= format_cents(line_item.unit_price_cents) %></td>
-            <td><%= format_cents(line_item.total_cents) %></td>
+            <td class="numeric"><%= line_item.quantity %></td>
+            <td class="numeric"><%= format_cents(line_item.unit_price_cents) %></td>
+            <td class="numeric"><%= format_cents(line_item.total_cents) %></td>
           </tr>
         <% end %>
       </tbody>
     </table>
   </section>
 
-  <section>
+  <section class="section">
     <h2>Audit history</h2>
     <% if @audit_entries.any? %>
       <ol>
@@ -68,7 +70,7 @@
         <% end %>
       </ol>
     <% else %>
-      <p>No status changes yet.</p>
+      <p class="empty-state">No status changes yet.</p>
     <% end %>
   </section>
 </main>
